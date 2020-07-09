@@ -41,11 +41,13 @@ def alloc_buf(engine):
 
 def inference(engine, context, inputs, out_cpu, in_gpu, out_gpu, stream):
     # async version
-    # with engine.create_execution_context() as context:  # cost time to initialize
-    # cuda.memcpy_htod_async(in_gpu, inputs, stream)
-    # context.execute_async(1, [int(in_gpu), int(out_gpu)], stream.handle, None)
-    # cuda.memcpy_dtoh_async(out_cpu, out_gpu, stream)
-    # stream.synchronize()
+    '''
+    with engine.create_execution_context() as context:  # cost time to initialize
+        cuda.memcpy_htod_async(in_gpu, inputs, stream)
+        context.execute_async(1, [int(in_gpu), int(out_gpu)], stream.handle, None)
+        cuda.memcpy_dtoh_async(out_cpu, out_gpu, stream)
+        stream.synchronize()
+    '''
 
     # sync version
     cuda.memcpy_htod(in_gpu, inputs)
