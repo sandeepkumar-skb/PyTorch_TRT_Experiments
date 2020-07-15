@@ -77,18 +77,17 @@ if __name__ == "__main__":
     engine = build_engine(args.onnx_model, inp_shape)
     context = engine.create_execution_context()
     res = ""
+    in_cpu, out_cpu, in_gpu, out_gpu, stream = alloc_buf(engine)
+    with open('imagenet_classes.txt') as f:
+        labels = [line.strip() for line in f.readlines()]
     for i in range(10):
         img = Image.open("cats_and_dogs_filtered/train/dogs/dog.{}.jpg".format(i))
         img_t = transform_img(img)
         inputs = torch.unsqueeze(img_t, 0)
         inputs = inputs.numpy()
         t1 = time.time()
-        in_cpu, out_cpu, in_gpu, out_gpu, stream = alloc_buf(engine)
         res = inference(engine, context, inputs.reshape(-1), out_cpu, in_gpu, out_gpu, stream)
-        #print(res)
         print("cost time: {:.4f}secs".format(time.time()-t1))
-        with open('imagenet_classes.txt') as f:
-            labels = [line.strip() for line in f.readlines()]
         index = np.argmax(res)
         print("Prediction: {}".format(labels[index]))
 
