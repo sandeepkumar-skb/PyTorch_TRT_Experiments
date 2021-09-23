@@ -9,8 +9,11 @@ import time
 import argparse
 
 
-
-TRT_LOGGER = trt.Logger(trt.Logger.WARNING)
+verbose = True
+if verbose:
+    TRT_LOGGER = trt.Logger(trt.Logger.VERBOSE)
+else:
+    TRT_LOGGER = trt.Logger(trt.Logger.INFO)
 
 def build_engine(model_path, shape):
     with trt.Builder(TRT_LOGGER) as builder, \
