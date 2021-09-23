@@ -32,7 +32,7 @@ def build_engine(model_path, shape):
         config.max_workspace_size = 1<<30
                           
         network.get_input(0).shape = shape
-        engine = builder.build_cuda_engine(network, config)
+        engine = builder.build_engine(network, config)
         return engine
 
 def alloc_buf(engine):
