@@ -19,12 +19,20 @@ def build_engine(model_path, shape):
     with trt.Builder(TRT_LOGGER) as builder, \
         builder.create_network(1) as network, \
         trt.OnnxParser(network, TRT_LOGGER) as parser: 
-        builder.max_workspace_size = 1<<30
+        
         builder.max_batch_size = 1
         with open(model_path, "rb") as f:
-            parser.parse(f.read())
+            if not parser.parse(f.read()):
+                print("ERROR: Failed to parse the ONNX file")
+                for error in range(parser.num_errors):
+                    print(parser.get_error(error))
+                return None
+                       
+        config = builder.create_builder_config()
+        config.max_workspace_size = 1<<30
+                          
         network.get_input(0).shape = shape
-        engine = builder.build_cuda_engine(network)
+        engine = builder.build_cuda_engine(network, config)
         return engine
 
 def alloc_buf(engine):
