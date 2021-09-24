@@ -81,7 +81,7 @@ def transform_img(image):
 if __name__ == "__main__":
     #inputs = np.random.random((1, 3, input_size, input_size)).astype(np.float32)
     parser = argparse.ArgumentParser(description="Create a TRT Engine from ONNX export and runs infernce")
-    parser.add_argument("--onnx_model", help="Provide the ONNX exported model", required=True)
+    parser.add_argument("--onnx", help="Provide the ONNX exported model", required=True)
     args = parser.parse_args()
 
     inp_shape = (1, 3, 224, 224)
