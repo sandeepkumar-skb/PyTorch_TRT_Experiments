@@ -17,7 +17,7 @@ else:
 
 def build_engine(model_path, shape):
     with trt.Builder(TRT_LOGGER) as builder, \
-        builder.create_network(1) as network, \
+        builder.create_network(flags=network_flags) as network, \
         trt.OnnxParser(network, TRT_LOGGER) as parser: 
         
         builder.max_batch_size = 1
