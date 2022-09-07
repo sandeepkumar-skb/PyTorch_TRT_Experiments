@@ -15,7 +15,8 @@ if verbose:
 else:
     TRT_LOGGER = trt.Logger(trt.Logger.INFO)
 
-def build_engine(model_path, shape):
+def build_engine(model_path):
+    network_flags = 1 << int(trt.NetworkDefinitionCreationFlag.EXPLICIT_BATCH)
     with trt.Builder(TRT_LOGGER) as builder, \
         builder.create_network(flags=network_flags) as network, \
         trt.OnnxParser(network, TRT_LOGGER) as parser: 
@@ -30,8 +31,6 @@ def build_engine(model_path, shape):
                        
         config = builder.create_builder_config()
         config.max_workspace_size = 1<<30
-                          
-        network.get_input(0).shape = shape
         engine = builder.build_engine(network, config)
         return engine
 
@@ -84,8 +83,7 @@ if __name__ == "__main__":
     parser.add_argument("--onnx", help="Provide the ONNX exported model", required=True)
     args = parser.parse_args()
 
-    inp_shape = (1, 3, 224, 224)
-    engine = build_engine(args.onnx_model, inp_shape)
+    engine = build_engine(args.onnx)
     context = engine.create_execution_context()
     res = ""
     in_cpu, out_cpu, in_gpu, out_gpu, stream = alloc_buf(engine)
