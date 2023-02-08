@@ -31,5 +31,5 @@ if __name__ == "__main__":
     model = create_model(args.model)#torchvision.models.resnet18(pretrained=True).cuda()
     model_path = args.model_path #"checkpoints/resnet18-5c106cde.pth"
     model = load_model_weight(model, model_path)
-    onnx_path = args.model + ".onnx"
+    onnx_path = f"{args.model}.onnx"
     export_onnx_model(model, dummy_input, onnx_path)

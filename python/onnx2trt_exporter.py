@@ -17,9 +17,7 @@ else:
 
 def build_engine(model_path):
     network_flags = 1 << int(trt.NetworkDefinitionCreationFlag.EXPLICIT_BATCH)
-    with trt.Builder(TRT_LOGGER) as builder, \
-        builder.create_network(flags=network_flags) as network, \
-        trt.OnnxParser(network, TRT_LOGGER) as parser: 
+    with (trt.Builder(TRT_LOGGER) as builder, builder.create_network(flags=network_flags) as network, trt.OnnxParser(network, TRT_LOGGER) as parser): 
         
         builder.max_batch_size = 1
         with open(model_path, "rb") as f:
@@ -28,11 +26,10 @@ def build_engine(model_path):
                 for error in range(parser.num_errors):
                     print(parser.get_error(error))
                 return None
-                       
+
         config = builder.create_builder_config()
         config.max_workspace_size = 1<<30
-        engine = builder.build_engine(network, config)
-        return engine
+        return builder.build_engine(network, config)
 
 def alloc_buf(engine):
     # host cpu mem
@@ -90,7 +87,7 @@ if __name__ == "__main__":
     with open('imagenet_classes.txt') as f:
         labels = [line.strip() for line in f.readlines()]
     for i in range(10):
-        img = Image.open("cats_and_dogs_filtered/train/dogs/dog.{}.jpg".format(i))
+        img = Image.open(f"cats_and_dogs_filtered/train/dogs/dog.{i}.jpg")
         img_t = transform_img(img)
         inputs = torch.unsqueeze(img_t, 0)
         inputs = inputs.numpy()
@@ -98,7 +95,7 @@ if __name__ == "__main__":
         res = inference(engine, context, inputs.reshape(-1), out_cpu, in_gpu, out_gpu, stream)
         print("cost time: {:.4f}secs".format(time.time()-t1))
         index = np.argmax(res)
-        print("Prediction: {}".format(labels[index]))
+        print(f"Prediction: {labels[index]}")
 
 
 

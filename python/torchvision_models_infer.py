@@ -37,6 +37,7 @@ def create_model(model_name=None):
     https://storage.googleapis.com/mledu-datasets/cats_and_dogs_filtered.zip \
     -O /tmp/cats_and_dogs_filtered.zip
 '''
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run torchvision models")
     parser.add_argument("--model", \
@@ -49,7 +50,7 @@ if __name__ == "__main__":
     model.eval().cuda()
 
     for i in range(10):
-        img = Image.open("cats_and_dogs_filtered/train/dogs/dog.{}.jpg".format(i))
+        img = Image.open(f"cats_and_dogs_filtered/train/dogs/dog.{i}.jpg")
         img_t = transform_image(img)
         batch_t = torch.unsqueeze(img_t, 0)
         batch_t = batch_t.cuda()
